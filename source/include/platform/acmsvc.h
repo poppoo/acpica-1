@@ -236,4 +236,9 @@
         _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG))
 #endif
 
+#if _MSC_VER > 1200 /* Versions above VC++ 6 */
+#define COMPILER_VA_MACRO               1
+#else
+#endif
+
 #endif /* __ACMSVC_H__ */
