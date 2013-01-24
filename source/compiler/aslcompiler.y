@@ -141,7 +141,6 @@ void *                      AslLocalAllocate (unsigned int Size);
 
 /* Bison/yacc configuration */
 
-#define static
 #undef alloca
 #define alloca              AslLocalAllocate
 #define yytname             AslCompilername
