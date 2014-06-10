@@ -815,13 +815,14 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 
 /*
  * GPE info flags - Per GPE
- * +-------+-+-+---+
- * |  7:4  |3|2|1:0|
- * +-------+-+-+---+
- *     |    | |  |
- *     |    | |  +-- Type of dispatch:to method, handler, notify, or none
- *     |    | +----- Interrupt type: edge or level triggered
- *     |    +------- Is a Wake GPE
+ * +-------+-+-+-+---+
+ * |  7:5  |4|3|2|1:0|
+ * +-------+-+-+-+---+
+ *     |    | | |  |
+ *     |    | | |  +-- Type of dispatch:to method, handler, notify, or none
+ *     |    | | +----- Interrupt type: edge or level triggered
+ *     |    | +------- Is a Wake GPE
+ *     |    +--------- Do not clear GPE automatically
  *     +------------ <Reserved>
  */
 #define ACPI_GPE_DISPATCH_NONE          (UINT8) 0x00
@@ -835,6 +836,7 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 #define ACPI_GPE_XRUPT_TYPE_MASK        (UINT8) 0x04
 
 #define ACPI_GPE_CAN_WAKE               (UINT8) 0x08
+#define ACPI_GPE_NO_AUTO_CLEAR          (UINT8) 0x10
 
 /*
  * Flags for GPE and Lock interfaces
