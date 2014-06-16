@@ -183,55 +183,6 @@ AcpiEvUpdateGpeEnableMask (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiEvEnableGpe
- *
- * PARAMETERS:  GpeEventInfo            - GPE to enable
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Clear a GPE of stale events and enable it.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiEvEnableGpe (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo)
-{
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_TRACE (EvEnableGpe);
-
-
-    /*
-     * We will only allow a GPE to be enabled if it has either an associated
-     * method (_Lxx/_Exx) or a handler, or is using the implicit notify
-     * feature. Otherwise, the GPE will be immediately disabled by
-     * AcpiEvGpeDispatch the first time it fires.
-     */
-    if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
-        ACPI_GPE_DISPATCH_NONE)
-    {
-        return_ACPI_STATUS (AE_NO_HANDLER);
-    }
-
-    /* Clear the GPE (of stale events) */
-
-    Status = AcpiHwClearGpe (GpeEventInfo);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Enable the requested GPE */
-
-    Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_ENABLE);
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiEvAddGpeReference
  *
  * PARAMETERS:  GpeEventInfo            - Add a reference to this GPE
@@ -266,7 +217,7 @@ AcpiEvAddGpeReference (
         Status = AcpiEvUpdateGpeEnableMask (GpeEventInfo);
         if (ACPI_SUCCESS (Status))
         {
-            Status = AcpiEvEnableGpe (GpeEventInfo);
+            Status = AcpiHwLowSetGpe (GpeEventInfo, ACPI_GPE_ENABLE);
         }
 
         if (ACPI_FAILURE (Status))
