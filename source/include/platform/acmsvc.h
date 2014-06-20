@@ -214,6 +214,11 @@
 /* warn C4131: uses old-style declarator (iASL compiler only) */
 #pragma warning(disable:4131)
 
+#if _MSC_VER <= 1200 /* Versions below VC++ 6 */
+/* warning C4514: unreferenced inline function has been removed */
+#pragma warning(disable:4514)
+#endif
+
 #if _MSC_VER > 1200 /* Versions above VC++ 6 */
 #pragma warning( disable : 4295 ) /* needed for acpredef.h array */
 #endif
