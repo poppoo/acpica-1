@@ -1227,7 +1227,7 @@ AcpiUtVsnprintf (
     const char              *Format,
     va_list                 Args);
 
-int
+int ACPI_INTERNAL_VAR_XFACE
 AcpiUtSnprintf (
     char                    *String,
     ACPI_SIZE               Size,
@@ -1241,7 +1241,7 @@ AcpiUtFileVprintf (
     const char              *Format,
     va_list                 Args);
 
-int
+int ACPI_INTERNAL_VAR_XFACE
 AcpiUtFilePrintf (
     ACPI_FILE               File,
     const char              *Format,
