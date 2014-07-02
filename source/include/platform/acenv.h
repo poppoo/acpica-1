@@ -202,6 +202,11 @@
 #define USE_NATIVE_ALLOCATE_ZEROED
 #endif
 
+/* AcpiHelp configuration. */
+#ifdef ACPI_HELP_APP
+#define USE_NATIVE_ALLOCATE_ZEROED
+#endif
+
 /* AcpiNames/Example configuration. Hardware disabled */
 
 #if (defined ACPI_EXAMPLE_APP)  || \
