@@ -173,6 +173,7 @@
     (defined ACPI_EXAMPLE_APP)
 #define ACPI_APPLICATION
 #define ACPI_SINGLE_THREADED
+#define USE_NATIVE_ALLOCATE_ZEROED
 #endif
 
 /* AcpiHelp configuration. Error messages disabled. */
@@ -199,7 +200,6 @@
 
 #ifdef ACPI_DUMP_APP
 #define ACPI_USE_NATIVE_MEMORY_MAPPING
-#define USE_NATIVE_ALLOCATE_ZEROED
 #endif
 
 /* AcpiNames/Example configuration. Hardware disabled */
