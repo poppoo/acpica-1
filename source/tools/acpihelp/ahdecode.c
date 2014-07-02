@@ -778,7 +778,7 @@ AhDisplayOperatorKeywords (
      * display the info about that keyword
      */
     ACPI_STRCPY (Gbl_LineBuffer, Op->Syntax);
-    Token = strtok (Gbl_LineBuffer, Separators);
+    Token = ACPI_STRTOK (Gbl_LineBuffer, Separators);
     while (Token)
     {
         if (ACPI_STRSTR (Token, "Keyword"))
@@ -794,7 +794,7 @@ AhDisplayOperatorKeywords (
             AhFindAslKeywords (Token);
         }
 
-        Token = strtok (NULL, Separators);
+        Token = ACPI_STRTOK (NULL, Separators);
     }
 }
 
@@ -838,7 +838,7 @@ AhPrintOneField (
     }
 
     Last = This + ACPI_STRLEN (This);
-    while ((Next = strpbrk (This, " ")))
+    while ((Next = ACPI_STRPBRK (This, " ")))
     {
         TokenLength = Next - This;
         Position += TokenLength;
