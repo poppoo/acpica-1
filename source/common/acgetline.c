@@ -160,15 +160,15 @@ extern UINT32               AcpiGbl_NextCmdNum;
 /* Erase a single character on the input command line */
 
 #define ACPI_CLEAR_CHAR() \
-    putchar (_ASCII_BACKSPACE); \
-    putchar (_ASCII_SPACE); \
-    putchar (_ASCII_BACKSPACE);
+    AcpiOsPutFileByte (ACPI_FILE_OUT, _ASCII_BACKSPACE); \
+    AcpiOsPutFileByte (ACPI_FILE_OUT, _ASCII_SPACE); \
+    AcpiOsPutFileByte (ACPI_FILE_OUT, _ASCII_BACKSPACE);
 
 /* Backup cursor by Count positions */
 
 #define ACPI_BACKUP_CURSOR(i, Count) \
     for (i = 0; i < (Count); i++) \
-        {putchar (_ASCII_BACKSPACE);}
+        {AcpiOsPutFileByte (ACPI_FILE_OUT, _ASCII_BACKSPACE);}
 
 
 /******************************************************************************
@@ -199,7 +199,7 @@ AcpiAcClearLine (
 
         for (i = 0; i < (EndOfLine - CursorPosition); i++)
         {
-            putchar (' ');
+            AcpiOsPutFileByte (ACPI_FILE_OUT, ' ');
         }
     }
 
@@ -247,7 +247,7 @@ AcpiOsGetLine (
 
     /* Always clear the line buffer before we read a new line */
 
-    memset (Buffer, 0, BufferLength);
+    ACPI_MEMSET (Buffer, 0, BufferLength);
 
     /*
      * This loop gets one character at a time (except for esc sequences)
@@ -263,7 +263,7 @@ AcpiOsGetLine (
             return (AE_BUFFER_OVERFLOW);
         }
 
-        InputChar = getchar ();
+        InputChar = AcpiOsGetFileByte (ACPI_FILE_IN);
         switch (InputChar)
         {
         default: /* This is the normal character case */
@@ -272,7 +272,7 @@ AcpiOsGetLine (
 
             if (EndOfLine == CursorPosition)
             {
-                putchar (InputChar);
+                AcpiOsPutFileByte (ACPI_FILE_OUT, InputChar);
                 Buffer[EndOfLine] = (char) InputChar;
 
                 EndOfLine++;
@@ -283,7 +283,7 @@ AcpiOsGetLine (
 
             /* Insert character into the middle of the buffer */
 
-            memmove (&Buffer[CursorPosition + 1], &Buffer[CursorPosition],
+            ACPI_MEMMOVE (&Buffer[CursorPosition + 1], &Buffer[CursorPosition],
                 (EndOfLine - CursorPosition + 1));
 
             Buffer [CursorPosition] = (char) InputChar;
@@ -291,7 +291,7 @@ AcpiOsGetLine (
 
             /* Display the new part of line starting at the new character */
 
-            fprintf (stdout, "%s", &Buffer[CursorPosition]);
+            ACPI_PRINTF ("%s", &Buffer[CursorPosition]);
 
             /* Restore cursor */
 
@@ -322,13 +322,13 @@ AcpiOsGetLine (
 
             /* Remove the character from the line */
 
-            memmove (&Buffer[CursorPosition - 1], &Buffer[CursorPosition],
+            ACPI_MEMMOVE (&Buffer[CursorPosition - 1], &Buffer[CursorPosition],
                 (EndOfLine - CursorPosition + 1));
 
             /* Display the new part of line starting at the new character */
 
-            putchar (_ASCII_BACKSPACE);
-            fprintf (stdout, "%s ", &Buffer[CursorPosition - 1]);
+            AcpiOsPutFileByte (ACPI_FILE_OUT, _ASCII_BACKSPACE);
+            ACPI_PRINTF ("%s ", &Buffer[CursorPosition - 1]);
 
             /* Restore cursor */
 
@@ -352,7 +352,7 @@ AcpiOsGetLine (
 
             /* Echo, terminate string buffer, and exit */
 
-            putchar (InputChar);
+            AcpiOsPutFileByte (ACPI_FILE_OUT, InputChar);
             Buffer[EndOfLine] = 0;
             return (AE_OK);
 
@@ -370,7 +370,7 @@ AcpiOsGetLine (
 
             /* Check for escape sequences of the form "ESC[x" */
 
-            InputChar = getchar ();
+            InputChar = AcpiOsGetFileByte (ACPI_FILE_IN);
             if (InputChar != _ASCII_LEFT_BRACKET)
             {
                 continue; /* Ignore this ESC, does not have the '[' */
@@ -378,14 +378,14 @@ AcpiOsGetLine (
 
             /* Get the code following the ESC [ */
 
-            InputChar = getchar (); /* Backup one character */
+            InputChar = AcpiOsGetFileByte (ACPI_FILE_IN); /* Backup one character */
             switch (InputChar)
             {
             case _ASCII_LEFT_ARROW:
 
                 if (CursorPosition > 0)
                 {
-                    putchar (_ASCII_BACKSPACE);
+                    AcpiOsPutFileByte (ACPI_FILE_OUT, _ASCII_BACKSPACE);
                     CursorPosition--;
                 }
                 continue;
@@ -400,7 +400,7 @@ AcpiOsGetLine (
                     /* Backup to start of line and print the entire line */
 
                     ACPI_BACKUP_CURSOR (i, CursorPosition);
-                    fprintf (stdout, "%s", Buffer);
+                    ACPI_PRINTF ("%s", Buffer);
 
                     /* Backup to where the cursor should be */
 
@@ -436,9 +436,9 @@ AcpiOsGetLine (
                 /* Make this the active command and echo it */
 
                 AcpiAcClearLine (EndOfLine, CursorPosition);
-                strcpy (Buffer, NextCommand);
-                fprintf (stdout, "%s", Buffer);
-                EndOfLine = CursorPosition = strlen (Buffer);
+                ACPI_STRCPY (Buffer, NextCommand);
+                ACPI_PRINTF ("%s", Buffer);
+                EndOfLine = CursorPosition = ACPI_STRLEN (Buffer);
 
                 PreviousCommandIndex = CurrentCommandIndex;
                 CurrentCommandIndex--;
@@ -482,9 +482,9 @@ AcpiOsGetLine (
                 /* Make this the active command and echo it */
 
                 AcpiAcClearLine (EndOfLine, CursorPosition);
-                strcpy (Buffer, NextCommand);
-                fprintf (stdout, "%s", Buffer);
-                EndOfLine = CursorPosition = strlen (Buffer);
+                ACPI_STRCPY (Buffer, NextCommand);
+                ACPI_PRINTF ("%s", Buffer);
+                EndOfLine = CursorPosition = ACPI_STRLEN (Buffer);
                 continue;
 
             case 0x31:
@@ -497,7 +497,7 @@ AcpiOsGetLine (
                  * Ignore the various keys like insert/delete/home/end, etc.
                  * But we must eat the final character of the ESC sequence.
                  */
-                InputChar = getchar ();
+                InputChar = AcpiOsGetFileByte (ACPI_FILE_IN);
                 continue;
 
             default:
