@@ -118,6 +118,9 @@
 #include "accommon.h"
 #include "acapps.h"
 
+#define _COMPONENT          ACPI_OS_SERVICES
+        ACPI_MODULE_NAME    ("osefixf")
+
 
 /* Local definitions */
 
