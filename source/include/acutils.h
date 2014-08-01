@@ -1218,6 +1218,8 @@ AcpiAhMatchUuid (
 /*
  * utprint - printf/vprintf output functions
  */
+#ifndef ACPI_USE_SYSTEM_CLIBRARY
+
 const char *
 AcpiUtScanNumber (
     const char              *String,
@@ -1254,6 +1256,18 @@ AcpiUtFilePrintf (
     ACPI_FILE               File,
     const char              *Format,
     ...);
+
+int
+AcpiUtVprintf (
+    const char              *Format,
+    va_list                 Args);
+
+int
+AcpiUtPrintf (
+    const char              *Format,
+    ...);
+#endif
+
 #endif
 
 /*
