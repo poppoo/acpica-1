@@ -130,7 +130,7 @@
  * Windows: The setargv.obj module must be linked in to automatically
  * expand wildcards.
  */
-extern BOOLEAN              AcpiGbl_DebugTimeout;
+
 
 /* Local prototypes */
 
@@ -322,10 +322,12 @@ AeDoOptions (
             printf ("Enabling AML Interpreter slack mode\n");
             break;
 
+#ifdef WIN32
         case 't':
 
             AcpiGbl_DebugTimeout = TRUE;
             break;
+#endif
 
         default:
 
