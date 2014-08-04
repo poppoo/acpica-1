@@ -192,7 +192,7 @@ usage (
     ACPI_OPTION ("-b \"CommandLine\"",  "Batch mode command line execution (cmd1;cmd2;...)");
     ACPI_OPTION ("-h -?",               "Display this help message");
     ACPI_OPTION ("-m [Method]",         "Batch mode method execution. Default=MAIN");
-    printf ("\n");
+    ACPI_USAGE_TEXT ("\n");
 
     ACPI_OPTION ("-da",                 "Disable method abort on error");
     ACPI_OPTION ("-di",                 "Disable execution of STA/INI methods during init");
@@ -200,14 +200,14 @@ usage (
     ACPI_OPTION ("-dr",                 "Disable repair of method return values");
     ACPI_OPTION ("-ds",                 "Disable method auto-serialization");
     ACPI_OPTION ("-dt",                 "Disable allocation tracking (performance)");
-    printf ("\n");
+    ACPI_USAGE_TEXT ("\n");
 
     ACPI_OPTION ("-ef",                 "Enable display of final memory statistics");
     ACPI_OPTION ("-ei",                 "Enable additional tests for ACPICA interfaces");
     ACPI_OPTION ("-el",                 "Enable loading of additional test tables");
     ACPI_OPTION ("-es",                 "Enable Interpreter Slack Mode");
     ACPI_OPTION ("-et",                 "Enable debug semaphore timeout");
-    printf ("\n");
+    ACPI_USAGE_TEXT ("\n");
 
     ACPI_OPTION ("-f <Value>",          "Operation Region initialization fill value");
     ACPI_OPTION ("-r",                  "Use hardware-reduced FADT V5");
@@ -244,7 +244,7 @@ AeDoOptions (
 
         if (strlen (AcpiGbl_Optarg) > (AE_BUFFER_SIZE -1))
         {
-            printf ("**** The length of command line (%u) exceeded maximum (%u)\n",
+            ACPI_PRINTF ("**** The length of command line (%u) exceeded maximum (%u)\n",
                 (UINT32) strlen (AcpiGbl_Optarg), (AE_BUFFER_SIZE -1));
             return (-1);
         }
@@ -290,7 +290,7 @@ AeDoOptions (
 
         default:
 
-            printf ("Unknown option: -d%s\n", AcpiGbl_Optarg);
+            ACPI_PRINTF ("Unknown option: -d%s\n", AcpiGbl_Optarg);
             return (-1);
         }
         break;
@@ -319,7 +319,7 @@ AeDoOptions (
         case 's':
 
             AcpiGbl_EnableInterpreterSlack = TRUE;
-            printf ("Enabling AML Interpreter slack mode\n");
+            ACPI_PRINTF ("Enabling AML Interpreter slack mode\n");
             break;
 
 #ifdef WIN32
@@ -331,7 +331,7 @@ AeDoOptions (
 
         default:
 
-            printf ("Unknown option: -e%s\n", AcpiGbl_Optarg);
+            ACPI_PRINTF ("Unknown option: -e%s\n", AcpiGbl_Optarg);
             return (-1);
         }
         break;
@@ -379,7 +379,7 @@ AeDoOptions (
     case 'r':
 
         AcpiGbl_UseHwReducedFadt = TRUE;
-        printf ("Using ACPI 5.0 Hardware Reduced Mode via version 5 FADT\n");
+        ACPI_PRINTF ("Using ACPI 5.0 Hardware Reduced Mode via version 5 FADT\n");
         break;
 
     case 'v':
@@ -402,7 +402,7 @@ AeDoOptions (
 
         default:
 
-            printf ("Unknown option: -v%s\n", AcpiGbl_Optarg);
+            ACPI_PRINTF ("Unknown option: -v%s\n", AcpiGbl_Optarg);
             return (-1);
         }
         break;
@@ -411,7 +411,7 @@ AeDoOptions (
 
         AcpiDbgLevel = strtoul (AcpiGbl_Optarg, NULL, 0);
         AcpiGbl_DbConsoleDebugLevel = AcpiDbgLevel;
-        printf ("Debug Level: 0x%8.8X\n", AcpiDbgLevel);
+        ACPI_PRINTF ("Debug Level: 0x%8.8X\n", AcpiDbgLevel);
         break;
 
     default:
@@ -465,7 +465,7 @@ main (
         goto ErrorExit;
     }
 
-    printf (ACPI_COMMON_SIGNON (ACPIEXEC_NAME));
+    ACPI_PRINTF (ACPI_COMMON_SIGNON (ACPIEXEC_NAME));
     if (argc < 2)
     {
         usage ();
@@ -498,7 +498,7 @@ main (
         Status = AcpiUtReadTableFromFile (argv[AcpiGbl_Optind], &Table);
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not get table from file %s, %s\n",
+            ACPI_PRINTF ("**** Could not get table from file %s, %s\n",
                 argv[AcpiGbl_Optind], AcpiFormatException (Status));
             goto ErrorExit;
         }
@@ -528,7 +528,7 @@ main (
         AcpiGbl_Optind++;
     }
 
-    printf ("\n");
+    ACPI_PRINTF ("\n");
 
     /* Build a local RSDT with all tables and let ACPICA process the RSDT */
 
@@ -541,7 +541,7 @@ main (
     Status = AeInstallTables ();
     if (ACPI_FAILURE (Status))
     {
-        printf ("**** Could not load ACPI tables, %s\n",
+        ACPI_PRINTF ("**** Could not load ACPI tables, %s\n",
             AcpiFormatException (Status));
         goto EnterDebugger;
     }
@@ -571,7 +571,7 @@ main (
     Status = AcpiEnableSubsystem (InitFlags);
     if (ACPI_FAILURE (Status))
     {
-        printf ("**** Could not EnableSubsystem, %s\n",
+        ACPI_PRINTF ("**** Could not EnableSubsystem, %s\n",
             AcpiFormatException (Status));
         goto EnterDebugger;
     }
@@ -587,7 +587,7 @@ main (
     Status = AcpiInitializeObjects (InitFlags);
     if (ACPI_FAILURE (Status))
     {
-        printf ("**** Could not InitializeObjects, %s\n",
+        ACPI_PRINTF ("**** Could not InitializeObjects, %s\n",
             AcpiFormatException (Status));
         goto EnterDebugger;
     }
