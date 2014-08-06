@@ -192,6 +192,50 @@ AcpiOsCloseFile (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiOsGetFileByte
+ *
+ * PARAMETERS:  File                - File descriptor
+ *
+ * RETURN:      Size of successfully written buffer
+ *
+ * DESCRIPTION: Read 1 byte from a file.
+ *
+ ******************************************************************************/
+
+int
+AcpiOsGetFileByte (
+    ACPI_FILE               File)
+{
+
+    return (getc(File));
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsPutFileByte
+ *
+ * PARAMETERS:  File                - File descriptor
+ *              ch                  - Data buffer
+ *
+ * RETURN:      Size of successfully written buffer
+ *
+ * DESCRIPTION: Write 1 byte to a file.
+ *
+ ******************************************************************************/
+
+int
+AcpiOsPutFileByte (
+    ACPI_FILE               File,
+    const char              ch)
+{
+
+    return (putc(ch, File));
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiOsReadFile
  *
  * PARAMETERS:  File                - An open file descriptor
