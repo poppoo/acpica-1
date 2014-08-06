@@ -157,7 +157,11 @@ AcpiOsOpenFile (
     {
         ModesStr[i++] = 'b';
     }
-
+    if (Modes & ACPI_FILE_APPENDING)
+    {
+        ModesStr[i++] = 'w';
+        ModesStr[i++] = '+';
+    }
     ModesStr[i++] = '\0';
 
     File = fopen (Path, ModesStr);

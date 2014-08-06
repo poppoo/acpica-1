@@ -499,7 +499,7 @@ AcpiOsOpenFile (
     /* Convert modes */
 
     OpenModes = EFI_FILE_MODE_READ;
-    if (Modes & ACPI_FILE_WRITING)
+    if (Modes & ACPI_FILE_WRITING || Modes & ACPI_FILE_APPENDING)
     {
         OpenModes |= (EFI_FILE_MODE_WRITE | EFI_FILE_MODE_CREATE);
     }
