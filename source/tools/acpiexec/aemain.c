@@ -351,7 +351,7 @@ AeDoOptions (
     case '?':
 
         usage();
-        return (0);
+        return (-1);
 
     case 'm':
 
@@ -388,7 +388,7 @@ AeDoOptions (
         {
         case '^':  /* -v: (Version): signon already emitted, just exit */
 
-            exit (0);
+            return (-1);
 
         case 'i':
 
