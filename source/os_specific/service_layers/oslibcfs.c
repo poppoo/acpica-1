@@ -200,6 +200,30 @@ AcpiOsCloseFile (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiOsGetLine
+ *
+ * PARAMETERS:  buf                 - buffer to store the data
+ *              bufsize             - Size of buffer
+ *              File                - File descriptor
+ *
+ * RETURN:      The character read or EOF on the end of the file or error
+ *
+ * DESCRIPTION: Read a character from the file.
+ *
+ ******************************************************************************/
+
+char*
+AcpiOsGetLine (
+    char                    *buf
+    int                     bufsize,
+    ACPI_FILE               File)
+{
+    return (fgets (buf, bufsize, File));
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiOsGetFileCharacter
  *
  * PARAMETERS:  File                - File descriptor

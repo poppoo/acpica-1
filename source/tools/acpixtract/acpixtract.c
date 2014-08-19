@@ -144,7 +144,7 @@ AxGetNextInstance (
 
 static size_t
 AxGetTableHeader (
-    FILE                    *InputFile,
+    ACPI_FILE                InputFile,
     unsigned char           *OutputData);
 
 static unsigned int
@@ -308,7 +308,7 @@ AxNormalizeSignature (
     char                    *Signature)
 {
 
-    if (!strncmp (Signature, "RSD ", 4))
+    if (!ACPI_STRNCMP (Signature, "RSD ", 4))
     {
         Signature[3] = 'P';
     }
@@ -341,7 +341,7 @@ AxConvertLine (
 
     /* Terminate the input line at the end of the actual data (for sscanf) */
 
-    End = strstr (InputLine + 2, "  ");
+    End = ACPI_STRSTR (InputLine + 2, "  ");
     if (!End)
     {
         return (0); /* Don't understand the format */
@@ -388,7 +388,7 @@ AxConvertLine (
 
 static size_t
 AxGetTableHeader (
-    FILE                    *InputFile,
+    ACPI_FILE                InputFile,
     unsigned char           *OutputData)
 {
     size_t                  BytesConverted;
@@ -400,7 +400,7 @@ AxGetTableHeader (
 
     for (i = 0; i < 3; i++)
     {
-        if (!fgets (HeaderBuffer, AX_LINE_BUFFER_SIZE, InputFile))
+        if (!AcpiOsGetLine (HeaderBuffer, AX_LINE_BUFFER_SIZE, InputFile))
         {
             return (TotalConverted);
         }
@@ -438,11 +438,11 @@ AxCountTableInstances (
     char                    *InputPathname,
     char                    *Signature)
 {
-    FILE                    *InputFile;
+    ACPI_FILE               InputFile;
     unsigned int            Instances = 0;
 
 
-    InputFile = fopen (InputPathname, "rt");
+    InputFile = AcpiOsOpenFile (InputPathname, ACPI_FILE_READING | ACPI_FILE_TEXT);
     if (!InputFile)
     {
         printf ("Could not open file %s\n", InputPathname);
@@ -451,7 +451,7 @@ AxCountTableInstances (
 
     /* Count the number of instances of this signature */
 
-    while (fgets (InstanceBuffer, AX_LINE_BUFFER_SIZE, InputFile))
+    while (AcpiOsGetLine (InstanceBuffer, AX_LINE_BUFFER_SIZE, InputFile))
     {
         /* Ignore empty lines and lines that start with a space */
 
@@ -468,7 +468,7 @@ AxCountTableInstances (
         }
     }
 
-    fclose (InputFile);
+    AcpiOsCloseFile (InputFile);
     return (Instances);
 }
 
@@ -557,8 +557,8 @@ AxExtractTables (
     char                    *Signature,
     unsigned int            MinimumInstances)
 {
-    FILE                    *InputFile;
-    FILE                    *OutputFile = NULL;
+    ACPI_FILE               InputFile;
+    ACPI_FILE               OutputFile = NULL;
     size_t                  BytesWritten;
     size_t                  TotalBytesWritten = 0;
     size_t                  BytesConverted;
@@ -572,7 +572,7 @@ AxExtractTables (
 
     /* Open input in text mode, output is in binary mode */
 
-    InputFile = fopen (InputPathname, "rt");
+    InputFile = AcpiOsOpenFile (InputPathname, ACPI_FILE_READING | ACPI_FILE_TEXT);
     if (!InputFile)
     {
         printf ("Could not open file %s\n", InputPathname);
@@ -601,7 +601,7 @@ AxExtractTables (
 
     /* Convert all instances of the table to binary */
 
-    while (fgets (LineBuffer, AX_LINE_BUFFER_SIZE, InputFile))
+    while (AcpiOsGetLine (LineBuffer, AX_LINE_BUFFER_SIZE, InputFile))
     {
         switch (State)
         {
@@ -631,7 +631,7 @@ AxExtractTables (
              * RSD PTR @ 0xf6cd0
              * SSDT @ (nil)
              */
-            if (!strstr (LineBuffer, " @ "))
+            if (!ACPI_STRSTR (LineBuffer, " @ "))
             {
                 continue;
             }
@@ -667,7 +667,7 @@ AxExtractTables (
             }
 
             AxStrlwr (Filename);
-            OutputFile = fopen (Filename, "w+b");
+            OutputFile = AcpiOsOpenFile (Filename, ACPI_FILE_WRITING | ACPI_FILE_APPENDING | ACPI_FILE_BINARY);
             if (!OutputFile)
             {
                 printf ("Could not open file %s\n", Filename);
@@ -687,7 +687,7 @@ AxExtractTables (
             if (AxIsEmptyLine (LineBuffer) ||
                 (LineBuffer[0] != ' '))
             {
-                fclose (OutputFile);
+                AcpiOsCloseFile (OutputFile);
                 OutputFile = NULL;
                 State = AX_STATE_FIND_HEADER;
 
@@ -706,7 +706,7 @@ AxExtractTables (
             if (BytesWritten != BytesConverted)
             {
                 printf ("Error when writing file %s\n", Filename);
-                fclose (OutputFile);
+                AcpiOsCloseFile (OutputFile);
                 OutputFile = NULL;
                 Status = -1;
                 goto CleanupAndExit;
@@ -732,7 +732,7 @@ CleanupAndExit:
 
     if (OutputFile)
     {
-        fclose (OutputFile);
+        AcpiOsCloseFile (OutputFile);
         if (State == AX_STATE_EXTRACT_DATA)
         {
             /* Received an EOF while extracting data */
@@ -742,7 +742,7 @@ CleanupAndExit:
         }
     }
 
-    fclose (InputFile);
+    AcpiOsCloseFile (InputFile);
     return (Status);
 }
 
@@ -764,7 +764,7 @@ int
 AxListTables (
     char                    *InputPathname)
 {
-    FILE                    *InputFile;
+    ACPI_FILE               InputFile;
     size_t                  HeaderSize;
     unsigned char           Header[48];
     int                     TableCount = 0;
@@ -773,7 +773,7 @@ AxListTables (
 
     /* Open input in text mode, output is in binary mode */
 
-    InputFile = fopen (InputPathname, "rt");
+    InputFile = AcpiOsOpenFile (InputPathname, ACPI_FILE_READING | ACPI_FILE_TEXT);
     if (!InputFile)
     {
         printf ("Could not open file %s\n", InputPathname);
@@ -785,7 +785,7 @@ AxListTables (
     printf ("\nSignature  Length      Revision   OemId    OemTableId"
             "   OemRevision CompilerId CompilerRevision\n\n");
 
-    while (fgets (LineBuffer, AX_LINE_BUFFER_SIZE, InputFile))
+    while (AcpiOsGetLine (LineBuffer, AX_LINE_BUFFER_SIZE, InputFile))
     {
         /* Ignore empty lines and lines that start with a space */
 
@@ -805,7 +805,7 @@ AxListTables (
 
         /* RSDP has an oddball signature and header */
 
-        if (!strncmp (TableHeader->Signature, "RSD PTR ", 8))
+        if (!ACPI_STRNCMP (TableHeader->Signature, "RSD PTR ", 8))
         {
             AxCheckAscii ((char *) &Header[9], 6);
             printf ("%7.4s                          \"%6.6s\"\n", "RSDP", &Header[9]);
@@ -846,6 +846,6 @@ AxListTables (
     }
 
     printf ("\nFound %u ACPI tables\n", TableCount);
-    fclose (InputFile);
+    AcpiOsCloseFile (InputFile);
     return (0);
 }
